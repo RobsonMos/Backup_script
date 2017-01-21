@@ -1,0 +1,39 @@
+#!/bin/sh
+#
+# Créditos do script, versão, etc.
+#
+
+# Confs do script
+# Onde, DIR_ORIG é o diretório a ser backupeado, BKP_NAME é o nome do 
+# arquivo de backup a ser criado, FTP_HOST é o endereço do servidor de 
+# FTP e, FTP_USER e FTP_PASS são respectivamente o usuario e a senha a 
+# serem usados para logarmos no servidor de FTP.
+
+DIR_ORIG="/"
+BKP_NAME="Backup.tgz"
+FTP_HOST="192.168.0.1"
+FTP_USER="USER"
+FTP_PASS="PASSWARD"
+
+# compactação do diretório de origem
+tar -czpf ./${BKP_NAME} ${DIR_ORIG}
+
+# envio para o FTP, onde neste caso, abrimos a conexao com o servidor, 
+# deletamos o arquivo de backup ja existente e envia o novo backup para o 
+# diretorio home do usuario do FTP.
+ftp -in <<EOF
+open $FTP_HOST
+user $FTP_USER $FTP_PASS
+bin
+hash
+prompt
+del $BKP_NAME
+put $BKP_NAME
+bye
+EOF
+
+# mensagem de resultado
+echo "Seu backup foi realizado com sucesso."
+echo "Diretório: ${DIR_ORIG}"
+echo "Destino: ${FTP_HOST}/${BKP_NAME}";
+exit
